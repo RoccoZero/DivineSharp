@@ -1,17 +1,16 @@
-﻿using Divine;
+﻿using System;
+using System.Linq;
+
+using Divine;
 using Divine.Menu;
 using Divine.Menu.Items;
 using Divine.SDK.Extensions;
-using SharpDX;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace EnderTest
+using SharpDX;
+
+namespace CreepHPBars
 {
-    public class EnderTest1 : Bootstrapper
+    public class CreepHPBars : Bootstrapper
     {
         private MenuSwitcher optEnabledAlly;
         private MenuSwitcher optEnabledEnemy;

@@ -1,2 +1,0 @@
-D:\Visual Studio Projects\C# Projects\Test\Test\obj\Release\Test.csprojAssemblyReference.cache
-D:\Visual Studio Projects\C# Projects\Test\Test\obj\Release\Test.csproj.CoreCompileInputs.cache
