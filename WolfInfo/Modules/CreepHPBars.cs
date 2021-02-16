@@ -2,7 +2,6 @@
 using System.Linq;
 
 using Divine;
-using Divine.Menu;
 using Divine.Menu.Items;
 using Divine.SDK.Extensions;
 
@@ -14,27 +13,29 @@ namespace WolfInfo
     {
         public readonly MenuSwitcher optEnabledAlly;
         public readonly MenuSwitcher optEnabledEnemy;
-        public readonly MenuSlider DisplayRadius;
 
+        public readonly MenuSlider DisplayRadius;
         public readonly MenuSlider TextSize;
-        public readonly MenuSlider OffsetX;
-        public readonly MenuSlider OffsetY;
         public readonly MenuSlider BarWidth;
         public readonly MenuSlider BarHeight;
+        public readonly MenuSlider OffsetX;
+        public readonly MenuSlider OffsetY;
+        public Unit[] creeps;
 
         private readonly Hero localHero = EntityManager.LocalHero;
 
         public CreepHPBars(Context context)
         {
             var rootCreepHPBars = context.RootMenu.CreateMenu("Creep HP Bars", "Creep HP Bars");
-            optEnabledAlly = rootCreepHPBars.CreateSwitcher("Ally Creeps");
-            optEnabledEnemy = rootCreepHPBars.CreateSwitcher("Enemy Creeps");
-            DisplayRadius = rootCreepHPBars.CreateSlider("Display Radius", 700, 500, 1500);
-            TextSize = rootCreepHPBars.CreateSlider("Text Size", 20, 10, 50);
-            BarWidth = rootCreepHPBars.CreateSlider("Bar Width", 100, 50, 300);
-            BarHeight = rootCreepHPBars.CreateSlider("Bar Height", 10, 5, 50);
-            OffsetX = rootCreepHPBars.CreateSlider("Offset X", 0, -200, 200);
-            OffsetY = rootCreepHPBars.CreateSlider("Offset Y", 0, -50, 50);
+            optEnabledAlly = rootCreepHPBars.CreateSwitcher("Ally Creeps", false);
+            optEnabledEnemy = rootCreepHPBars.CreateSwitcher("Enemy Creeps", false);
+            var rootCreepHPBarsSettings = rootCreepHPBars.CreateMenu("Settings");
+            DisplayRadius = rootCreepHPBarsSettings.CreateSlider("Display Radius", 700, 500, 1500);
+            TextSize = rootCreepHPBarsSettings.CreateSlider("Text Size", 20, 10, 50);
+            BarWidth = rootCreepHPBarsSettings.CreateSlider("Bar Width", 100, 50, 300);
+            BarHeight = rootCreepHPBarsSettings.CreateSlider("Bar Height", 10, 5, 50);
+            OffsetX = rootCreepHPBarsSettings.CreateSlider("Offset X", 0, -200, 200);
+            OffsetY = rootCreepHPBarsSettings.CreateSlider("Offset Y", 0, -50, 50);
 
             RendererManager.Draw += RendererManager_Draw;
         }
@@ -69,8 +70,9 @@ namespace WolfInfo
                     DrawCreepHP(unit);
                 }
             }
-
         }
+        
+       
 
         private void DrawCreepHP(Unit unit)
         {
@@ -130,7 +132,7 @@ namespace WolfInfo
                     BarHeight.Value),
                 Color2);
             var textSize = RendererManager.MeasureText(hitCount.ToString(), "Tahoma", TextSize.Value);
-            var textPos = new Vector2(unitScreenPos.X + OffsetX.Value - (textSize.X * 0.5f) - 2, unitScreenPos.Y + OffsetY.Value + (BarHeight.Value * 0.5f));
+            var textPos = new Vector2(unitScreenPos.X + OffsetX.Value - (float)(textSize.X * 0.5f) - 2, unitScreenPos.Y + OffsetY.Value + (float)(BarHeight.Value * 0.5f));
 
             DrawBlackText(
                 hitCount.ToString(),
@@ -143,17 +145,61 @@ namespace WolfInfo
         public static void DrawBlackText(string text, Vector2 position, Color color, string fontFamilyName, float fontSize)
         {
             var scaling = (fontSize * 0.04f);
-            DrawTextCentered(text, new Vector2(position.X + scaling, position.Y + scaling), new Color(0, 0, 0, (int)color.A), fontFamilyName, fontSize);
-            DrawTextCentered(text, new Vector2(position.X + scaling, position.Y - scaling), new Color(0, 0, 0, (int)color.A), fontFamilyName, fontSize);
-            DrawTextCentered(text, new Vector2(position.X - scaling, position.Y - scaling), new Color(0, 0, 0, (int)color.A), fontFamilyName, fontSize);
-            DrawTextCentered(text, new Vector2(position.X - scaling, position.Y + scaling), new Color(0, 0, 0, (int)color.A), fontFamilyName, fontSize);
-            DrawTextCentered(text, position, color, fontFamilyName, fontSize);
-        }
-
-        public static void DrawTextCentered(string text, Vector2 position, Color color, string fontFamilyName, float fontSize)
-        {
-            var textSize = RendererManager.MeasureText(text, fontFamilyName, fontSize);
-            RendererManager.DrawText(text, new Vector2(position.X - (textSize.X * 0.5f), position.Y - (textSize.Y * 0.5f)), color, fontFamilyName, fontSize);
+            RendererManager.DrawText(
+                text,
+                new RectangleF(
+                    position.X + scaling - (ushort.MaxValue / 2),
+                    position.Y + scaling - (ushort.MaxValue / 2),
+                    ushort.MaxValue,
+                    ushort.MaxValue),
+                new Color(0, 0, 0, (int)color.A),
+                fontFamilyName,
+                FontFlags.Center | FontFlags.VerticalCenter,
+                fontSize);
+            RendererManager.DrawText(
+                text,
+                new RectangleF(
+                    position.X + scaling - (ushort.MaxValue / 2),
+                    position.Y - scaling - (ushort.MaxValue / 2),
+                    ushort.MaxValue,
+                    ushort.MaxValue),
+                new Color(0, 0, 0, (int)color.A),
+                fontFamilyName,
+                FontFlags.Center | FontFlags.VerticalCenter,
+                fontSize);
+            RendererManager.DrawText(
+                text,
+                new RectangleF(
+                    position.X - scaling - (ushort.MaxValue / 2),
+                    position.Y - scaling - (ushort.MaxValue / 2),
+                    ushort.MaxValue,
+                    ushort.MaxValue),
+                new Color(0, 0, 0, (int)color.A),
+                fontFamilyName,
+                FontFlags.Center | FontFlags.VerticalCenter,
+                fontSize);
+            RendererManager.DrawText(
+                text,
+                new RectangleF(
+                    position.X - scaling - (ushort.MaxValue / 2),
+                    position.Y + scaling - (ushort.MaxValue / 2),
+                    ushort.MaxValue,
+                    ushort.MaxValue),
+                new Color(0, 0, 0, (int)color.A),
+                fontFamilyName,
+                FontFlags.Center | FontFlags.VerticalCenter,
+                fontSize);
+            RendererManager.DrawText(
+                text,
+                new RectangleF(
+                    position.X - (ushort.MaxValue / 2),
+                    position.Y - (ushort.MaxValue / 2),
+                    ushort.MaxValue,
+                    ushort.MaxValue),
+                color,
+                fontFamilyName,
+                FontFlags.Center | FontFlags.VerticalCenter,
+                fontSize);
         }
     }
 }

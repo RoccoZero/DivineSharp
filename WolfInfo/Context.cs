@@ -6,7 +6,7 @@ namespace WolfInfo
     internal sealed class Context
     {
         public readonly RootMenu RootMenu;
-        private readonly CreepHPBars CreepHPBars;
+        public readonly CreepHPBars CreepHPBars;
 
         public Context()
         {
