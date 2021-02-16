@@ -51,15 +51,15 @@ namespace WolfInfo
                 return;
 
             foreach (var unit in EntityManager.GetEntities<Creep>().Where(
-                                                                    x => x.IsValid 
-                                                                    && x.IsSpawned 
-                                                                    && (x.ClassId == ClassId.CDOTA_BaseNPC_Creep 
-                                                                    || x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane
-                                                                    || x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege)
-                                                                    && !x.IsDormant 
-                                                                    && x.IsVisible 
-                                                                    && x.IsAlive 
-                                                                    && x.Distance2D(localHero) <= DisplayRadius.Value))
+                                x => x.IsValid 
+                                && x.IsSpawned 
+                                && (x.ClassId == ClassId.CDOTA_BaseNPC_Creep 
+                                || x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane
+                                || x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege)
+                                && !x.IsDormant 
+                                && x.IsVisible 
+                                && x.IsAlive 
+                                && x.Distance2D(localHero) <= DisplayRadius.Value))
             {
                 if (!unit.IsAlly(localHero) && optEnabledEnemy.Value)
                 {
