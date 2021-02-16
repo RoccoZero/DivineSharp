@@ -12,28 +12,13 @@ namespace CreepHPBars
 {
     public class CreepHPBars : Bootstrapper
     {
-        private MenuSwitcher optEnabledAlly;
-        private MenuSwitcher optEnabledEnemy;
-        private MenuSlider DisplayRadius;
-        private MenuSlider TextSize;
-        private MenuSlider OffsetX;
-        private MenuSlider OffsetY;
-        private MenuSlider BarWidth;
-        private MenuSlider BarHeight;
+
+        
         private Hero localHero;
 
         protected override void OnActivate()
         {
-            var rootMenu = MenuManager.CreateRootMenu("Ender_Wolf");
-            var rootCreepHPBars = rootMenu.CreateMenu("Creep HP Bars", "Creep HP Bars");
-            optEnabledAlly = rootCreepHPBars.CreateSwitcher("Ally Creeps");
-            optEnabledEnemy = rootCreepHPBars.CreateSwitcher("Enemy Creeps");
-            DisplayRadius = rootCreepHPBars.CreateSlider("Display Radius", 700, 500, 1500);
-            TextSize = rootCreepHPBars.CreateSlider("Text Size", 20, 10, 50);
-            BarWidth = rootCreepHPBars.CreateSlider("Bar Width", 100, 50, 300);
-            BarHeight = rootCreepHPBars.CreateSlider("Bar Height", 10, 5, 50);
-            OffsetX = rootCreepHPBars.CreateSlider("Offset X", 0, -200, 200);
-            OffsetY = rootCreepHPBars.CreateSlider("Offset Y", 0, -50, 50);
+             new MenuInit();
 
             RendererManager.Draw += RendererManager_Draw;
 
