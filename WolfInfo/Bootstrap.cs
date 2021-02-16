@@ -8,6 +8,7 @@ namespace WolfInfo
 
         protected override void OnActivate()
         {
+
             Context = new Context();
         }
 

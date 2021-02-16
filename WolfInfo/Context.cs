@@ -10,12 +10,13 @@ namespace WolfInfo
 
         public Context()
         {
-            RootMenu = MenuManager.CreateRootMenu("Ender_Wolf");
+            RootMenu = MenuManager.CreateRootMenu("WolfInfo");
             CreepHPBars = new CreepHPBars(this);
         }
 
         public void Dispose()
         {
+            CreepHPBars.Dispose();
         }
     }
 }
