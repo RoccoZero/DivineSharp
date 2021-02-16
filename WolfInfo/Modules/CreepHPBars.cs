@@ -65,7 +65,7 @@ namespace WolfInfo
                 {
                     DrawCreepHP(unit);
                 }
-                else if (optEnabledAlly.Value)
+                else if (unit.IsAlly(localHero) && optEnabledAlly.Value)
                 {
                     DrawCreepHP(unit);
                 }
