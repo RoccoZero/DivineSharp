@@ -20,7 +20,6 @@ namespace WolfInfo
         public readonly MenuSlider BarHeight;
         public readonly MenuSlider OffsetX;
         public readonly MenuSlider OffsetY;
-        public Unit[] creeps;
 
         private readonly Hero localHero = EntityManager.LocalHero;
 
@@ -65,7 +64,7 @@ namespace WolfInfo
                 {
                     DrawCreepHP(unit);
                 }
-                else if (unit.IsAlly(localHero) && optEnabledAlly.Value)
+                else if (unit.IsAlly(localHero) &&optEnabledAlly.Value)
                 {
                     DrawCreepHP(unit);
                 }

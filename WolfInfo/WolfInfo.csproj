@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Context.cs" />
+    <Compile Include="Modules\ShowCourierItems.cs" />
     <Compile Include="Modules\CreepHPBars.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
