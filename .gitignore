@@ -240,3 +240,4 @@ bin
 obj
 Output
 IntermediateOutput
+*.idea
