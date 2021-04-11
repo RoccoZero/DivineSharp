@@ -14,7 +14,7 @@ namespace RegenFailSwitch
         public readonly RootMenu RootMenu;
         public readonly MenuSwitcher Enabled;
         public readonly MenuItemToggler Items;
-
+        // я сосу писос
         public Menu()
         {
             RootMenu = MenuManager.CreateRootMenu("RegenFailSwitch");
