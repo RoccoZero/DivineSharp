@@ -20,14 +20,13 @@ namespace Changer
             //    tree.SetModel(Menu.TreeModel.Value + ".vmdl");
             //}
 
-            //Console.WriteLine();
             Menu.RiverType.ValueChanged += RiverType_ValueChanged;
             Menu.TreeModel.ValueChanged += TreeModel_ValueChanged;
         }
 
         private void TreeModel_ValueChanged(MenuSelector selector, SelectorEventArgs e)
         {
-            if (e.NewValue != "OFF")
+            if (e.NewValue != "OFF" && e.NewValue != "")
             {
                 //Console.WriteLine(e.NewValue + ".vmdl");
                 foreach (var tree in EntityManager.GetEntities<Tree>())
