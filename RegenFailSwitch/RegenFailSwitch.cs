@@ -7,6 +7,7 @@ using Divine.Menu.Items;
 using Divine.Menu.EventArgs;
 using Divine;
 using Divine.SDK.Extensions;
+using Divine.Items;
 
 namespace RegenFailSwitch
 {
@@ -27,11 +28,14 @@ namespace RegenFailSwitch
             { AbilityId.item_enchanted_mango, (string.Empty, "mana") },
             { AbilityId.item_faerie_fire, (string.Empty, "health") }
         };
+
         private readonly MenuItemToggler Items;
+        private readonly Hero localHero;
 
         public RegenFailSwitch(Context context)
         {
             Items = context.Menu.Items;
+            localHero = EntityManager.LocalHero;
             context.Menu.Enabled.ValueChanged += Enabled_ValueChanged;
         }
 
@@ -49,13 +53,13 @@ namespace RegenFailSwitch
 
         private void OrderManager_OrderAdding(OrderAddingEventArgs e)
         {
-            if (e.IsCustom || 
+            if (e.IsCustom ||
                 (e.Order.Type != OrderType.CastTarget && e.Order.Type != OrderType.Cast) || 
-                !RegenItems.TryGetValue(e.Order.Ability.Id, out var modifier))
+                !RegenItems.TryGetValue(e.Order.Ability.Id, out var modifier) /*||
+                (e.Order.Units.FirstOrDefault().Inventory.GetItemsById(AbilityId.item_bottle).FirstOrDefault() as Bottle).StoredRune == RuneType.None*/)
             {
                 return;
             }
-
             if (!Items[e.Order.Ability.Id])
             {
                 return;
@@ -74,13 +78,27 @@ namespace RegenFailSwitch
 
         internal bool CheckRegen(Unit unit, string modifier, string type)
         {
-            return type switch
+            if (unit.IsAlly(localHero))
             {
-                "health" when unit.Health == unit.MaximumHealth || unit.HasModifier(modifier) => false,
-                "mana" when unit.Mana == unit.MaximumMana || unit.HasModifier(modifier) => false,
-                "both" when (unit.Health == unit.MaximumHealth && unit.Mana == unit.MaximumMana) || unit.HasModifier(modifier) => false,
-                {} => true
-            };
+                return type switch
+                {
+                    "health" when unit.Health == unit.MaximumHealth || unit.HasModifier(modifier) => false,
+                    "mana" when unit.Mana == unit.MaximumMana || unit.HasModifier(modifier) => false,
+                    "both" when (unit.Health == unit.MaximumHealth && unit.Mana == unit.MaximumMana) || unit.HasModifier(modifier) => false,
+                    { } => true
+                };
+            }
+            else
+            {
+                if (unit.HasModifier("modifier_item_spirit_vessel_damage") || unit.HasModifier("modifier_item_urn_damage"))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
         }
 
         internal void Dispose()
