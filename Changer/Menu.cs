@@ -14,6 +14,7 @@ namespace Changer
         public readonly RootMenu RootMenu;
         public readonly MenuSelector RiverType;
         public readonly MenuSelector TreeModel;
+        public readonly MenuSlider TreeModelScale;
         public readonly string[] RiverTypes = new string[]
         {
             "Default",
@@ -55,6 +56,7 @@ namespace Changer
                  "Tree model",
                  TreeModels
             );
+            TreeModelScale = RootMenu.CreateSlider("Tree model scale (%)", 100, 1, 500);
 
         }
     }

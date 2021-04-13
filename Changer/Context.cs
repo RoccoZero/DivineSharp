@@ -22,6 +22,15 @@ namespace Changer
 
             Menu.RiverType.ValueChanged += RiverType_ValueChanged;
             Menu.TreeModel.ValueChanged += TreeModel_ValueChanged;
+            Menu.TreeModelScale.ValueChanged += TreeModelScale_ValueChanged;
+        }
+
+        private void TreeModelScale_ValueChanged(MenuSlider slider, SliderEventArgs e)
+        {
+            foreach (var tree in EntityManager.GetEntities<Tree>())
+            {
+                tree.Scale = e.NewValue * 0.01f;
+            }
         }
 
         private void TreeModel_ValueChanged(MenuSelector selector, SelectorEventArgs e)
@@ -31,7 +40,7 @@ namespace Changer
                 //Console.WriteLine(e.NewValue + ".vmdl");
                 foreach (var tree in EntityManager.GetEntities<Tree>())
                 {
-                    tree.SetModel(e.NewValue + ".vmdl");
+                    tree.Model = e.NewValue + ".vmdl";
                 }
             }
         }
