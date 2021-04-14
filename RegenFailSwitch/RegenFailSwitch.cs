@@ -53,10 +53,11 @@ namespace RegenFailSwitch
 
         private void OrderManager_OrderAdding(OrderAddingEventArgs e)
         {
-            if (e.IsCustom ||
+            if ((e.IsCustom ||
                 (e.Order.Type != OrderType.CastTarget && e.Order.Type != OrderType.Cast) || 
-                !RegenItems.TryGetValue(e.Order.Ability.Id, out var modifier) /*||
-                (e.Order.Units.FirstOrDefault().Inventory.GetItemsById(AbilityId.item_bottle).FirstOrDefault() as Bottle).StoredRune == RuneType.None*/)
+                !RegenItems.TryGetValue(e.Order.Ability.Id, out var modifier) ||
+                ((e.Order.Ability is Bottle bottle) && bottle.StoredRuneType != RuneType.None)) ||
+                !Items[e.Order.Ability.Id])
             {
                 return;
             }
