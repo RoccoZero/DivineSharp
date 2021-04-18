@@ -13,14 +13,13 @@ namespace JungleStacker
         public Hero LocalHero;
         public UpdateHandler UpdateHandler;
         public List<Camp> Camps = new List<Camp> { };
+        public Menu Menu;
 
         public Stacker(Context context)
         {
             LocalHero = EntityManager.LocalHero;
-
-            UpdateHandler = UpdateManager.CreateIngameUpdate(100, UpdateManager_IngameUpdate);
-            RendererManager.Draw += RendererManager_Draw;
-            context.Menu.AutoSelectUnits.ValueChanged += AutoSelectUnits_ValueChanged;
+            Menu = context.Menu;
+            Menu.Enabled.ValueChanged += Enabled_ValueChanged;
             
 
             foreach (var camp in GameManager.NeutralCamps)
@@ -64,6 +63,22 @@ namespace JungleStacker
                     );
                 }
 
+            }
+        }
+
+        private void Enabled_ValueChanged(Divine.Menu.Items.MenuSwitcher switcher, Divine.Menu.EventArgs.SwitcherEventArgs e)
+        {
+            if (e.Value)
+            {
+                UpdateHandler = UpdateManager.CreateIngameUpdate(100, UpdateManager_IngameUpdate);
+                RendererManager.Draw += RendererManager_Draw;
+                Menu.AutoSelectUnits.ValueChanged += AutoSelectUnits_ValueChanged;
+            }
+            else
+            {
+                UpdateManager.DestroyIngameUpdate(UpdateHandler);
+                RendererManager.Draw -= RendererManager_Draw;
+                Menu.AutoSelectUnits.ValueChanged -= AutoSelectUnits_ValueChanged;
             }
         }
 
