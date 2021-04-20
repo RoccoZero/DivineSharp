@@ -16,8 +16,8 @@ namespace JungleStacker
         public bool IsActive;
         public Unit Unit = null;
         public Vector3 Position = Vector3.Zero;
-        public int StackTime = 55;
-        public int TimeOffset = 0;
+        public float StackTime = 55f;
+        public float TimeOffset = 0f;
         public Vector3 WaitPosition = Vector3.Zero;
         public Vector3 StackPosition = Vector3.Zero;
         public Vector2 MousePosition = Vector2.Zero;

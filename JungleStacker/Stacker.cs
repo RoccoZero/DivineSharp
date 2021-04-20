@@ -11,8 +11,8 @@ namespace JungleStacker
     internal sealed class Stacker
     {
         public Hero LocalHero;
-        public UpdateHandler UpdateHandler;
         public List<Camp> Camps = new List<Camp> { };
+        public List<Camp> ActiveCamps = new List<Camp> { };
         public Menu Menu;
 
         public Stacker(Context context)
@@ -24,14 +24,14 @@ namespace JungleStacker
 
             foreach (var camp in GameManager.NeutralCamps)
             {
-                StackInfo.Positions.TryGetValue(camp.Name, out List<(string, Vector3)> outInfo);
+                StackInfo.CampInfo.TryGetValue(camp.Name, out Vector3[] outInfo);
                 Camps.Add(new Camp
                 {
                     Name = camp.Name, 
                     Position = camp.Box.Center,
-                    WaitPosition = outInfo[0].Item2,
-                    StackPosition = outInfo[1].Item2,
-                    TimeOffset = (int)outInfo[2].Item2.X
+                    WaitPosition = outInfo[0],
+                    StackPosition = outInfo[1],
+                    TimeOffset = outInfo[2].X
                 });
 
                 var corners = camp.Box.GetCorners();
@@ -70,13 +70,13 @@ namespace JungleStacker
         {
             if (e.Value)
             {
-                UpdateHandler = UpdateManager.CreateIngameUpdate(100, UpdateManager_IngameUpdate);
+                UpdateManager.IngameUpdate += UpdateManager_IngameUpdate;
                 RendererManager.Draw += RendererManager_Draw;
                 Menu.AutoSelectUnits.ValueChanged += AutoSelectUnits_ValueChanged;
             }
             else
             {
-                UpdateManager.DestroyIngameUpdate(UpdateHandler);
+                UpdateManager.IngameUpdate -= UpdateManager_IngameUpdate;
                 RendererManager.Draw -= RendererManager_Draw;
                 Menu.AutoSelectUnits.ValueChanged -= AutoSelectUnits_ValueChanged;
             }
@@ -90,8 +90,8 @@ namespace JungleStacker
                 {
                     var nearestCamp = Camps.Where(x => x.Unit == null).OrderBy(x => unit.Distance2D(x.Position)).FirstOrDefault();
                     nearestCamp.Unit = unit;
-                    EntityManager.LocalHero.Select();
                 }
+                EntityManager.LocalHero.Select();
             }
         }
 
@@ -100,61 +100,84 @@ namespace JungleStacker
             foreach (var camp in Camps)
             {
                 camp.DrawInfo();
+                //if (!ActiveCamps.Contains(camp) && camp.IsActive && camp.Unit != null)
+                //{
+                //    ActiveCamps.Add(camp);
+                //}
+                //else
+                {
+                }
             }
 
         }
 
         private void UpdateManager_IngameUpdate()
         {
-            var Minutes = (int)(GameManager.GameTime / 60) < 10 ? "0" + ((int)(GameManager.GameTime / 60)).ToString() : ((int)(GameManager.GameTime / 60)).ToString();
-            var Seconds = (int)(GameManager.GameTime % 60f) < 10 ? "0" + ((int)(GameManager.GameTime % 60f)).ToString() : ((int)(GameManager.GameTime % 60f)).ToString();
-            Console.WriteLine(Minutes + ":" + Seconds );
+            //var Minutes = (int)(GameManager.GameTime / 60) < 10 ? "0" + ((int)(GameManager.GameTime / 60)).ToString() : ((int)(GameManager.GameTime / 60)).ToString();
+            //var Seconds = (int)(GameManager.GameTime % 60f) < 10 ? "0" + ((int)(GameManager.GameTime % 60)).ToString() : ((int)(GameManager.GameTime % 60f)).ToString();
+            //int.TryParse(Seconds, out var seconds);
+            var seconds = ((float)(int)(GameManager.GameTime % 60 * 10)) / 10;
+            //Console.WriteLine(seconds);
+            if (seconds >= 0.0 && seconds <= 0.1)
+            {
+                GameManager.ExecuteCommand("dota_spawn_neutrals");
+            }
+            //Console.WriteLine(Minutes + ":" + Seconds );
+            //if (!ActiveCamps.Any())
+            //{
+            //    return;
+            //}
             foreach (var camp in Camps)
             {
+
                 if (camp.Unit != null && (!camp.Unit.IsValid || !camp.Unit.IsAlive))
                 {
                     StackerOrderManager.LastOrders[camp.Unit] = (OrderType.None, (Vector3.Zero, null));
                     camp.Unit = null;
+                    camp.StackState = StackState.None;
+                    //ActiveCamps.Remove(camp);
                 }
                 if (!camp.IsActive || camp.Unit == null)
                 {
-                    camp.StackState = StackState.None;
                     continue;
                 }
 
-                Console.WriteLine($"Camp Name: {camp.Name} Camp Unit: {camp.Unit.Name} State: {camp.StackState}");
-                int.TryParse(Seconds, out var seconds);
+                //Console.WriteLine($"Camp Name: {camp.Name} Camp Unit: {camp.Unit?.Name} State: {camp.StackState}");
 
-                var nearestUnit = EntityManager.GetEntities<Unit>().Where(x => !x.IsWaitingToSpawn && x.Handle != camp.Unit.Handle && x.Distance2D(camp.Unit.Position) <= 700 && x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral).OrderBy( x => x.Distance2D(camp.Unit.Position)).FirstOrDefault();
-                Console.WriteLine($"nearestName: {nearestUnit?.Name} Activity: {nearestUnit?.NetworkActivity}");
+                var nearestUnit = EntityManager.GetEntities<Unit>().Where(x => x.Distance2D(camp.Unit.Position) <= 700 && !x.IsWaitingToSpawn && x.Handle != camp.Unit.Handle && x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral).OrderBy( x => x.Distance2D(camp.Unit.Position)).FirstOrDefault();
+
+                //Console.WriteLine($"nearestName: {nearestUnit?.Name} Activity: {nearestUnit?.NetworkActivity}");
                 switch (camp.StackState)
                 {
                     case StackState.None:
-                        if (seconds >= 3 && seconds < 50)
+                        if (seconds >= 5 && seconds < 50)
                         {
                             camp.StackState = StackState.WaitPosition;
                         }
                         break;
                     case StackState.WaitPosition:
                         StackerOrderManager.Move(camp.Unit, camp.WaitPosition, false);
-                        var unitsInCamp = EntityManager.GetEntities<Unit>().Where(x => !x.IsWaitingToSpawn && x.Handle != camp.Unit.Handle && x.Distance2D(camp.Unit.Position) <= 700 && x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral).Count();
+                        var unitsInCamp = EntityManager.GetEntities<Unit>().Where(x => x.Distance2D(camp.Position) <= 700 && !x.IsWaitingToSpawn && x.Handle != camp.Unit.Handle && x.ClassId == ClassId.CDOTA_BaseNPC_Creep_Neutral).Count();
+                        var calcTimeOffset = 0f;
+                        if (nearestUnit != null)
+                        {
+                            calcTimeOffset = ((float)(int)((((nearestUnit?.Distance2D(camp.Unit) ?? camp.Unit.AttackRange) - camp.Unit.AttackRange) / camp.Unit.MovementSpeed * 10f) + camp.Unit.AttackPoint()) / 10f);
+                        }
                         switch (unitsInCamp)
                         {
-                            case <= 7:
-                                camp.StackTime = 55 - (camp.Unit.IsRanged ? 0 : 1) + camp.TimeOffset;
+                            case <= 6:
+                                camp.StackTime = 55f - calcTimeOffset + camp.TimeOffset;
                                 break;
-                            case (>= 8 and < 17):
-                                camp.StackTime = 54 - (camp.Unit.IsRanged ? 0 : 1) + camp.TimeOffset;
+                            case (>= 7 and < 13):
+                                camp.StackTime = 54f - calcTimeOffset + camp.TimeOffset;
                                 break;
-                            case >= 17:
-                                camp.StackTime = 53 - (camp.Unit.IsRanged ? 0 : 1) + camp.TimeOffset;
-                                break;
-                            default:
+                            case >= 13:
+                                camp.StackTime = 53f - calcTimeOffset + camp.TimeOffset;
                                 break;
                         }
 
-                        Console.WriteLine($"Units in camp: {unitsInCamp} Stack Time: {camp.StackTime}");
-                        if (seconds == camp.StackTime)
+                        //Console.WriteLine($"Units in camp: {unitsInCamp} Stack Time: {camp.StackTime}");
+                        if (seconds == camp.StackTime || seconds+0.1f == camp.StackTime)
                         {
                             if (nearestUnit == null)
                             {
@@ -165,7 +188,7 @@ namespace JungleStacker
                         }
                         break;
                     case StackState.HitPosition:
-                        if (camp.Unit.Position.Distance2D(camp.WaitPosition) <= 10)
+                        if (camp.Unit.Position.Distance2D(camp.Position) <= 600)
                         {
                             StackerOrderManager.Move(camp.Unit, nearestUnit.Position, false);
                         }
@@ -173,12 +196,8 @@ namespace JungleStacker
                         if (camp.Unit.Distance2D(nearestUnit) <= camp.Unit.AttackRange)
                         {
                             StackerOrderManager.Attack(camp.Unit, nearestUnit, false);
-                            MultiSleeper<string>.Sleeper($"Stacker.{camp.Unit.Handle}").Sleep(((camp.Unit.AttackPoint() + GameManager.AvgPing) * 1000f) + 75f);
+                            MultiSleeper<string>.Sleeper($"Stacker.{camp.Unit.Handle}").Sleep(((camp.Unit.AttackPoint() + GameManager.AvgPing) * 1000f) + 100f);
                             camp.StackState = StackState.StackPosition;
-                        }
-
-                        //if (nearestUnit.NetworkActivity != NetworkActivity.Idle)
-                        {
                         }
                         break;
                     case StackState.StackPosition:
@@ -194,8 +213,9 @@ namespace JungleStacker
 
         internal void Dispose()
         {
-            UpdateManager.DestroyIngameUpdate(UpdateHandler);
+            UpdateManager.IngameUpdate -= UpdateManager_IngameUpdate;
             RendererManager.Draw -= RendererManager_Draw;
+            Menu.AutoSelectUnits.ValueChanged -= AutoSelectUnits_ValueChanged;
         }
     }
 }
