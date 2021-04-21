@@ -23,7 +23,7 @@ namespace JungleStacker
                 "neutralcamp_good_2",
                 new Vector3[] {
                     new(4245, -3891, 128),
-                    new(3114, -3614, 128),
+                    new(3092, -3764, 128),
                     new(-1f)
                 }
             },
@@ -32,7 +32,7 @@ namespace JungleStacker
                 new Vector3[] {
                     new(2057, -4134, 256),
                     new(1145, -3849, 256),
-                    new(0)
+                    new(1f)
                 }
             },
             {
@@ -48,14 +48,14 @@ namespace JungleStacker
                 new Vector3[] {
                     new(-1889, -3592, 128),
                     new(-1801, -2888, 128),
-                    new(0)
+                    new(1f)
                 }
             },
             {
                 "neutralcamp_good_6",
                 new Vector3[] {
                     new(-2744, -178, 128),
-                    new(-3947, -836, 256),
+                    new(-3435, -267, 256),
                     new(0)
                 }
             },
@@ -64,7 +64,7 @@ namespace JungleStacker
                 new Vector3[] {
                     new(-3870, 615, 256),
                     new(-3896, -450, 256),
-                    new(0)
+                    new(-1f)
                 }
             },
             {

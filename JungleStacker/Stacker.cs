@@ -118,10 +118,10 @@ namespace JungleStacker
             //int.TryParse(Seconds, out var seconds);
             var seconds = ((float)(int)(GameManager.GameTime % 60 * 10)) / 10;
             //Console.WriteLine(seconds);
-            if (seconds >= 0.0 && seconds <= 0.1)
-            {
-                GameManager.ExecuteCommand("dota_spawn_neutrals");
-            }
+            //if (seconds >= 0.0 && seconds <= 0.1)
+            //{
+            //    GameManager.ExecuteCommand("dota_spawn_neutrals");
+            //}
             //Console.WriteLine(Minutes + ":" + Seconds );
             //if (!ActiveCamps.Any())
             //{
@@ -161,7 +161,7 @@ namespace JungleStacker
                         var calcTimeOffset = 0f;
                         if (nearestUnit != null)
                         {
-                            calcTimeOffset = ((float)(int)((((nearestUnit?.Distance2D(camp.Unit) ?? camp.Unit.AttackRange) - camp.Unit.AttackRange) / camp.Unit.MovementSpeed * 10f) + camp.Unit.AttackPoint()) / 10f);
+                            calcTimeOffset = (int)(((nearestUnit.Distance2D(camp.Unit) - camp.Unit.AttackRange) / camp.Unit.MovementSpeed * 10f) + camp.Unit.AttackPoint()) / 10f;
                         }
                         switch (unitsInCamp)
                         {
@@ -188,7 +188,7 @@ namespace JungleStacker
                         }
                         break;
                     case StackState.HitPosition:
-                        if (camp.Unit.Position.Distance2D(camp.Position) <= 600)
+                        if (camp.Unit.Position.Distance2D(camp.Position) <= 700)
                         {
                             StackerOrderManager.Move(camp.Unit, nearestUnit.Position, false);
                         }
@@ -196,7 +196,7 @@ namespace JungleStacker
                         if (camp.Unit.Distance2D(nearestUnit) <= camp.Unit.AttackRange)
                         {
                             StackerOrderManager.Attack(camp.Unit, nearestUnit, false);
-                            MultiSleeper<string>.Sleeper($"Stacker.{camp.Unit.Handle}").Sleep(((camp.Unit.AttackPoint() + GameManager.AvgPing) * 1000f) + 100f);
+                            MultiSleeper<string>.Sleeper($"Stacker.{camp.Unit.Handle}").Sleep((camp.Unit.AttackPoint() * 1000f) + GameManager.AvgPing + 150f);
                             camp.StackState = StackState.StackPosition;
                         }
                         break;

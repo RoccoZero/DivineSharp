@@ -16,7 +16,7 @@ namespace JungleStacker
         {
             if (LastOrders.TryGetValue(Unit, out var Value) && Value.Item1 == OrderType.MovePosition && Value.Item2.Item1 == Position)
             {
-                Console.WriteLine("return");
+                //Console.WriteLine("return");
                 return;
             }
 
@@ -28,7 +28,7 @@ namespace JungleStacker
         {
             if (LastOrders.TryGetValue(Unit, out var Value) && (Value.Item1 == OrderType.AttackTarget && Value.Item2.Item2 == Target))
             {
-                Console.WriteLine("return");
+                //Console.WriteLine("return");
                 return;
             }
 
