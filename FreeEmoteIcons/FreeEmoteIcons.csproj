@@ -19,11 +19,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\bckgnd.png" />
-    <None Remove="Resources\ellipse.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Resources\bckgnd.png" />
     <EmbeddedResource Include="Resources\ellipse.png" />
   </ItemGroup>

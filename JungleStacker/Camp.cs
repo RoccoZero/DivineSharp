@@ -1,12 +1,14 @@
-﻿using Divine;
-using Divine.SDK.Extensions;
-using SharpDX;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
+
+using Divine.Entity;
+using Divine.Entity.Entities.Units;
+using Divine.Extensions;
+using Divine.Input;
+using Divine.Input.EventArgs;
+using Divine.Map;
+using Divine.Numerics;
+using Divine.Order.Orders.Components;
+using Divine.Renderer;
 
 namespace JungleStacker
 {
@@ -149,11 +151,11 @@ namespace JungleStacker
                 if (Unit == null)
                 {
                     var imgRect = new RectangleF(mainRect.X + (mainRect.Width * 0.5f) - (mainRect.Height * 0.1f), mainRect.Y + mainRect.Height - (mainRect.Height * 0.23f), mainRect.Height * 0.2f, mainRect.Height * 0.2f);
-                    RendererManager.DrawTexture("panorama/images/control_icons/question_mark_png.vtex_c", imgRect, TextureType.Default, true);
+                    RendererManager.DrawImage("panorama/images/control_icons/question_mark_png.vtex_c", imgRect, ImageType.Default, true);
                 }
                 else
                 {
-                    RendererManager.DrawTexture("panorama/images/heroes/" + Unit.Name + "_png.vtex_c", imgBorderRect, TextureType.Default, true);
+                    RendererManager.DrawImage("panorama/images/heroes/" + Unit.Name + "_png.vtex_c", imgBorderRect, ImageType.Default, true);
                 }
                 RendererManager.DrawFilledRectangle(imgBorderRect, new Color(0, 0, 0, 105));
                 RendererManager.DrawRectangle(imgBorderRect, Color.Black);
