@@ -1,13 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Divine.Menu.Items;
+
+using Divine.Entity;
+using Divine.Entity.Entities.Abilities.Components;
+using Divine.Entity.Entities.Abilities.Items;
+using Divine.Entity.Entities.Runes.Components;
+using Divine.Entity.Entities.Units;
+using Divine.Entity.Entities.Units.Heroes;
+using Divine.Extensions;
 using Divine.Menu.EventArgs;
-using Divine;
-using Divine.SDK.Extensions;
-using Divine.Items;
+using Divine.Menu.Items;
+using Divine.Order;
+using Divine.Order.EventArgs;
+using Divine.Order.Orders.Components;
 
 namespace RegenFailSwitch
 {

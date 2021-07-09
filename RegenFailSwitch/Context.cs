@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RegenFailSwitch
+﻿namespace RegenFailSwitch
 {
     internal sealed class Context
     {

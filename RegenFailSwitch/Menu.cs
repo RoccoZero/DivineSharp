@@ -1,11 +1,6 @@
-﻿using Divine;
+﻿using Divine.Entity.Entities.Abilities.Components;
 using Divine.Menu;
 using Divine.Menu.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RegenFailSwitch
 {
