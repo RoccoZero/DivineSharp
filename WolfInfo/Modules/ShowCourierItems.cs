@@ -1,12 +1,12 @@
-﻿using Divine;
+﻿using System.Linq;
+
+using Divine.Entity;
+using Divine.Entity.Entities.Units;
+using Divine.Entity.Entities.Units.Heroes;
+using Divine.Extensions;
 using Divine.Menu.Items;
-using Divine.SDK.Extensions;
-using SharpDX;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Divine.Numerics;
+using Divine.Renderer;
 
 namespace WolfInfo
 {
