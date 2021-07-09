@@ -1,8 +1,11 @@
-﻿using Divine;
-using Divine.Menu.Extensions;
-using Divine.SDK.Helpers;
+﻿using Divine.Extensions;
+using Divine.Helpers;
+using Divine.Input;
+using Divine.Input.EventArgs;
+using Divine.Numerics;
+using Divine.Renderer;
+
 using FreeEmoteIcons.Window;
-using SharpDX;
 
 namespace FreeEmoteIcons.Button
 {
@@ -114,11 +117,11 @@ namespace FreeEmoteIcons.Button
             Position = new Vector2(Window.globalPos.X, Window.globalPos.Y + Window.Scroll);
 
             var subStr = Emoticon.ImgName.Substring(0, Emoticon.ImgName.Length - 4);
-            RendererManager.DrawTexture(
+            RendererManager.DrawImage(
                 "FreeEmoteIcons.Ellipse",
                 new RectangleF(Window.Position.X, Window.Position.Y + Window.HeaderHeight, Window.Size.X, Window.Size.Y - Window.HeaderHeight),
                 new RectangleF(Position.X - 3 - BonusSize, Position.Y - 3 - BonusSize, Size.X + 6 + (BonusSize * 2), Size.Y + 6 + (BonusSize * 2)));
-            RendererManager.DrawTexture(
+            RendererManager.DrawImage(
             $"FreeEmoteIcons.{subStr}_{CurrentFrame}.png",
             new RectangleF(Window.Position.X, Window.Position.Y + Window.HeaderHeight, Window.Size.X, Window.Size.Y - Window.HeaderHeight),
             new RectangleF(Position.X - BonusSize, Position.Y - BonusSize, Size.X + (BonusSize * 2), Size.Y + (BonusSize * 2)));

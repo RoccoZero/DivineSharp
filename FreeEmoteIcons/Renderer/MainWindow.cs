@@ -1,16 +1,20 @@
-﻿using Divine;
-using Divine.ValveTexture;
-using FreeEmoteIcons.Button;
-using FreeEmoteIcons.Enums;
-using FreeEmoteIcons.VPK;
-using SharpDX;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+
+using Divine.Game;
+using Divine.GameConsole;
+using Divine.Input;
+using Divine.Input.EventArgs;
+using Divine.Numerics;
+using Divine.Renderer;
+using Divine.Renderer.ValveTexture;
+
+using FreeEmoteIcons.Button;
+using FreeEmoteIcons.Enums;
+using FreeEmoteIcons.VPK;
 
 namespace FreeEmoteIcons.Window
 {
@@ -44,14 +48,14 @@ namespace FreeEmoteIcons.Window
 
             Task.Run(() =>
             {
-                RendererManager.LoadTextureFromAssembly("FreeEmoteIcons.Background", "FreeEmoteIcons.Resources.bckgnd.png");
-                RendererManager.LoadTextureFromAssembly("FreeEmoteIcons.Ellipse", "FreeEmoteIcons.Resources.ellipse.png");
+                RendererManager.LoadImageFromAssembly("FreeEmoteIcons.Background", "FreeEmoteIcons.Resources.bckgnd.png");
+                RendererManager.LoadImageFromAssembly("FreeEmoteIcons.Ellipse", "FreeEmoteIcons.Resources.ellipse.png");
 
                 var emoticonKV = KeyValue.CreateFromGameFile("scripts/emoticons.txt");
-                foreach (var kv in emoticonKV.KeyValues)
+                foreach (var kv in emoticonKV.SubKeys)
                 {
                     var value = int.Parse(kv.Name);
-                    var kv1 = emoticonKV.GetKeyValue($"{kv.Name}/image_name");
+                    var kv1 = emoticonKV.GetSubKey($"{kv.Name}/image_name");
                     if (kv1 == null || value >= 10000)
                         continue;
                     var kv1Str = kv1.GetString();
@@ -60,7 +64,7 @@ namespace FreeEmoteIcons.Window
                     if (kv1Str == "marci_whistle.png") 
                         continue;
 
-                    var kv2 = emoticonKV.GetKeyValue($"{kv.Name}/ms_per_frame");
+                    var kv2 = emoticonKV.GetSubKey($"{kv.Name}/ms_per_frame");
                     if (kv2 == null)
                         continue;
                     var kv2Str = kv2.GetString();
@@ -84,7 +88,7 @@ namespace FreeEmoteIcons.Window
 
                     var stream = GameManager.OpenGameFile(item.Key);
                     var binaryReader = new BinaryReader(stream);
-                    var valveTextureBlock = new ValveTextureBlock(binaryReader);
+                    var valveTextureBlock = new Texture(binaryReader);
                     if (valveTextureBlock.Data == null)
                     {
                         //Console.WriteLine(item);
@@ -104,7 +108,7 @@ namespace FreeEmoteIcons.Window
                         var memoryStream = new MemoryStream();
                         editedBitmap.Save(memoryStream, ImageFormat.Png);
                         var subStr = imgName.Substring(0, imgName.Length - 4);
-                        RendererManager.LoadTexture($"FreeEmoteIcons.{subStr}_{i}.png", memoryStream);
+                        RendererManager.LoadImage($"FreeEmoteIcons.{subStr}_{i}.png", memoryStream);
                     }
                     emoticon.Loaded = true;
                 }
@@ -168,7 +172,7 @@ namespace FreeEmoteIcons.Window
 
         private void ImageButton_Button_Click(ImageButton sender)
         {
-            GameManager.ExecuteCommand($"{say} {char.ConvertFromUtf32(0xE000 + sender.Emoticon.Value)}");
+            GameConsoleManager.ExecuteCommand($"{say} {char.ConvertFromUtf32(0xE000 + sender.Emoticon.Value)}");
         }
 
         private void InputManager_MouseMove(MouseMoveEventArgs e)
@@ -190,7 +194,7 @@ namespace FreeEmoteIcons.Window
 
         private void InputManager_MouseKeyDown(MouseEventArgs e)
         {
-            if (e.MouseKey != MouseKey.Left || !new SharpDX.RectangleF(Position.X, Position.Y, Size.X, HeaderHeight).Contains(e.Position))
+            if (e.MouseKey != MouseKey.Left || !new RectangleF(Position.X, Position.Y, Size.X, HeaderHeight).Contains(e.Position))
                 return;
 
             MousePressed = true;
@@ -222,7 +226,7 @@ namespace FreeEmoteIcons.Window
 
             globalPos = new Vector2(Position.X + 10, Position.Y + HeaderHeight + 10);
 
-            RendererManager.DrawTexture("FreeEmoteIcons.Background", new RectangleF(Position.X, Position.Y, Size.X, Size.Y));;
+            RendererManager.DrawImage("FreeEmoteIcons.Background", new RectangleF(Position.X, Position.Y, Size.X, Size.Y));;
 
             var buttonSize = new Vector2(30, 30);
 

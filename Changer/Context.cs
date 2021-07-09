@@ -1,7 +1,10 @@
-﻿using Divine;
-using Divine.Menu.Items;
-using System;
+﻿using System;
+
+using Divine.Entity;
+using Divine.Entity.Entities.Trees;
+using Divine.Game;
 using Divine.Menu.EventArgs;
+using Divine.Menu.Items;
 
 namespace Changer
 {

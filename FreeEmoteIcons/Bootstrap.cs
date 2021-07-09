@@ -1,4 +1,6 @@
 ﻿using Divine;
+using Divine.Service;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

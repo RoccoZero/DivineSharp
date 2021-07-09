@@ -1,9 +1,7 @@
-﻿using Divine;
-using Divine.Menu.Items;
-using FreeEmoteIcons.Button;
+﻿using Divine.Numerics;
+using Divine.Renderer;
+
 using FreeEmoteIcons.Window;
-using SharpDX;
-using System;
 
 namespace FreeEmoteIcons
 {
