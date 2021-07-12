@@ -75,6 +75,7 @@ namespace FreeEmoteIcons.Window
 
                     Emoticons[fileName] = new Emoticon(fileName, kv1Str, value, int.Parse(kv2Str));
                 }
+                MaxScroll = -(40 * ((int)Math.Ceiling(Emoticons.Count / 8f) - 5));
 
                 var vpkBrowser = new VpkBrowser();
                 vpkBrowser.ReadFiles();
@@ -112,7 +113,6 @@ namespace FreeEmoteIcons.Window
                     }
                     emoticon.Loaded = true;
                 }
-                MaxScroll = -(40 * ((int)Math.Ceiling(Emoticons.Count / 8f) - 5));
             });
 
             InputManager.MouseMove += InputManager_MouseMove;
@@ -126,6 +126,7 @@ namespace FreeEmoteIcons.Window
 
         private void InputManager_WindowProc(WindowProcEventArgs e)
         {
+            //Console.WriteLine($"e.Msg: {(WindowsMessage)e.Msg} e.LParam: {e.LParam} e.WParam: {(VirtualKeys)e.WParam}");
             if (((WindowsMessage)e.Msg) != WindowsMessage.WM_KEYUP && ((WindowsMessage)e.Msg) != WindowsMessage.WM_KEYDOWN)
                 return;
 
@@ -157,11 +158,12 @@ namespace FreeEmoteIcons.Window
                     }
                     break;
             }
-            //Console.WriteLine($"e.Msg: {(WindowsMessage)e.Msg} e.LParam: {e.LParam} e.WParam: {(VirtualKeys)e.WParam}");
         }
 
         private void InputManager_MouseWheel(MouseWheelEventArgs e)
         {
+            if (!Show)
+                return;
             Scroll += e.Up ? 32 : -32;
             if (Scroll > MinScroll)
                 Scroll = MinScroll;
@@ -172,11 +174,19 @@ namespace FreeEmoteIcons.Window
 
         private void ImageButton_Button_Click(ImageButton sender)
         {
+            
             GameConsoleManager.ExecuteCommand($"{say} {char.ConvertFromUtf32(0xE000 + sender.Emoticon.Value)}");
         }
 
         private void InputManager_MouseMove(MouseMoveEventArgs e)
         {
+            if (!Show)
+                return;
+
+            foreach (var button in imgButtons)
+            {
+                button.Value.InputManager_MouseMove(e);
+            }
             if (!MousePressed)
                 return;
 
@@ -186,6 +196,13 @@ namespace FreeEmoteIcons.Window
 
         private void InputManager_MouseKeyUp(MouseEventArgs e)
         {
+            if (!Show)
+                return;
+
+            foreach (var button in imgButtons)
+            {
+                button.Value.InputManager_MouseKeyUp(e);
+            }
             if (e.MouseKey != MouseKey.Left)
                 return;
 
@@ -194,6 +211,13 @@ namespace FreeEmoteIcons.Window
 
         private void InputManager_MouseKeyDown(MouseEventArgs e)
         {
+            if (!Show)
+                return;
+
+            foreach (var button in imgButtons)
+            {
+                button.Value.InputManager_MouseKeyDown(e);
+            }
             if (e.MouseKey != MouseKey.Left || !new RectangleF(Position.X, Position.Y, Size.X, HeaderHeight).Contains(e.Position))
                 return;
 

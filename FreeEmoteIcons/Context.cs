@@ -1,6 +1,5 @@
 ﻿using Divine.Numerics;
 using Divine.Renderer;
-
 using FreeEmoteIcons.Window;
 
 namespace FreeEmoteIcons

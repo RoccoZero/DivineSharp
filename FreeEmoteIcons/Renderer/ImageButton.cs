@@ -4,7 +4,6 @@ using Divine.Input;
 using Divine.Input.EventArgs;
 using Divine.Numerics;
 using Divine.Renderer;
-
 using FreeEmoteIcons.Window;
 
 namespace FreeEmoteIcons.Button
@@ -39,12 +38,9 @@ namespace FreeEmoteIcons.Button
             Window = window;
             Emoticon = emoticon;
 
-            InputManager.MouseKeyDown += InputManager_MouseKeyDown;
-            InputManager.MouseKeyUp += InputManager_MouseKeyUp;
-            InputManager.MouseMove += InputManager_MouseMove;
         }
 
-        private void InputManager_MouseMove(MouseMoveEventArgs e)
+        public void InputManager_MouseMove(MouseMoveEventArgs e)
         {
             if (!IsHovered && e.Position.IsUnderRectangle(new RectangleF(Position.X, Position.Y, Size.X, Size.Y)))
             {
@@ -58,20 +54,6 @@ namespace FreeEmoteIcons.Button
             }
         }
 
-        public Vector2 GetPosition()
-        {
-            return Position;
-        }
-        public void UpdateFrame(int frame)
-        {
-            CurrentFrame = frame;
-        }
-
-        public void RefreshPosition(Vector2 position)
-        {
-            Position = position;
-        }
-
         public void InputManager_MouseKeyDown(MouseEventArgs e)
         {
             if (e.MouseKey != MouseKey.Left)
@@ -80,10 +62,10 @@ namespace FreeEmoteIcons.Button
             }
 
             if (e.Position.IsUnderRectangle(new RectangleF(
-                Window.Position.X, 
-                Window.Position.Y + Window.HeaderHeight, 
-                Window.Size.X, 
-                Window.Size.Y - Window.HeaderHeight)) 
+                Window.Position.X,
+                Window.Position.Y + Window.HeaderHeight,
+                Window.Size.X,
+                Window.Size.Y - Window.HeaderHeight))
                 && e.Position.IsUnderRectangle(new RectangleF(Position.X, Position.Y, Size.X, Size.Y)))
             {
                 e.Process = false;
@@ -99,10 +81,10 @@ namespace FreeEmoteIcons.Button
             }
 
             if (e.Position.IsUnderRectangle(new RectangleF(
-                Window.Position.X, 
-                Window.Position.Y + Window.HeaderHeight, 
-                Window.Size.X, 
-                Window.Size.Y - Window.HeaderHeight)) 
+                Window.Position.X,
+                Window.Position.Y + Window.HeaderHeight,
+                Window.Size.X,
+                Window.Size.Y - Window.HeaderHeight))
                 && e.Position.IsUnderRectangle(new RectangleF(Position.X, Position.Y, Size.X, Size.Y)) && IsKeyDown)
             {
                 //Console.WriteLine($"{TextureKey} clicked!");
@@ -111,6 +93,12 @@ namespace FreeEmoteIcons.Button
             }
             IsKeyDown = false;
         }
+
+        public void UpdateFrame(int frame)
+        {
+            CurrentFrame = frame;
+        }
+
 
         public void Draw()
         {
@@ -126,6 +114,11 @@ namespace FreeEmoteIcons.Button
             new RectangleF(Window.Position.X, Window.Position.Y + Window.HeaderHeight, Window.Size.X, Window.Size.Y - Window.HeaderHeight),
             new RectangleF(Position.X - BonusSize, Position.Y - BonusSize, Size.X + (BonusSize * 2), Size.Y + (BonusSize * 2)));
 
+            Animate();
+        }
+
+        private void Animate()
+        {
             if (IsHovered)
             {
                 if (!FrameSleeper.Sleeping)
@@ -146,10 +139,11 @@ namespace FreeEmoteIcons.Button
             } 
             else
             {
+                if (BonusSize > 0)
+                    BonusSize--;
+
                 if (CurrentFrame != 0)
                     CurrentFrame = 0;
-
-                BonusSize = 0;
             }
         }
     }

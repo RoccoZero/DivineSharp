@@ -69,6 +69,7 @@
         /// Input Method Editor (IME) Kana mode.
         /// </summary>
         KANA = 0x15,
+        HANGEUL = 0x15,  /* old name - should be here for compatibility */
         /// <summary>
         /// IME Hangul mode.
         /// </summary>

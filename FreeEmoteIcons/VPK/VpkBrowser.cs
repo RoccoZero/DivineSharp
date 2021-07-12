@@ -10,9 +10,7 @@ namespace FreeEmoteIcons.VPK
     using System.IO;
     using System.Linq;
     using System.Text;
-
     using Divine.Zero.Helpers;
-
     using FreeEmoteIcons.VPK.Resources;
     using FreeEmoteIcons.VPK.Utils;
 
