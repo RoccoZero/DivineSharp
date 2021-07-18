@@ -21,7 +21,7 @@ namespace FreeEmoteIcons.VPK
         // ReSharper disable once InconsistentNaming
         private const int MAGIC = 0x55AA1234;
 
-        internal readonly Dictionary<string, PackageEntry> entries = new Dictionary<string, PackageEntry>();
+        private Dictionary<string, PackageEntry> entries = new Dictionary<string, PackageEntry>();
 
         private readonly string vpkDirPath;
 
@@ -60,10 +60,11 @@ namespace FreeEmoteIcons.VPK
             }
         }
 
-        public void ReadFiles()
+        public Dictionary<string, PackageEntry> ReadFiles(HashSet<string> extensions, HashSet<string> folders)
         {
             try
             {
+                entries.Clear();
                 this.reader = new BinaryReader(new FileStream(this.vpkFullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 
                 if (this.reader.ReadUInt32() != MAGIC)
@@ -78,7 +79,8 @@ namespace FreeEmoteIcons.VPK
                 var otherMd5SectionSize = this.reader.ReadUInt32();
                 var signatureSectionSize = this.reader.ReadUInt32();
 
-                this.ReadEntries();
+                this.ReadEntries(extensions, folders);
+                return entries;
             }
             finally
             {
@@ -86,18 +88,22 @@ namespace FreeEmoteIcons.VPK
             }
         }
 
-        private void ReadEntries()
+        private void ReadEntries(HashSet<string> extensions, HashSet<string> folders)
         {
-            var extensions = new HashSet<string>
-            {
-                "vtex_c",
-                "png"
-            };
+            //{
+            //    extension
+            //};
+            //{
+            //    "vtex_c",
+            //    "png"
+            //};
 
-            var folders = new HashSet<string>
-            {
-                "panorama/images/emoticons"
-            };
+            //{
+            //    folder
+            //};
+            //{
+            //    "panorama/images/emoticons"
+            //};
 
             while (true)
             {

@@ -61,33 +61,62 @@ namespace FreeEmoteIcons.Window
                     var kv1Str = kv1.GetString();
 
                     // Missing file
-                    if (kv1Str == "marci_whistle.png") 
+                    if (kv1Str == "marci_whistle.png")
                         continue;
 
                     var kv2 = emoticonKV.GetSubKey($"{kv.Name}/ms_per_frame");
                     if (kv2 == null)
                         continue;
                     var kv2Str = kv2.GetString();
-                    var fileName = kv1Str.Substring(0, kv1Str.Length - 4) + "_png.vtex_c";
+                    var fileName = kv1Str[0..^4] + "_png.vtex_c";
 
                     //if (kv1Str != "wink.png")
                     //    continue;
 
+                    Console.WriteLine($"{fileName}, {kv1Str}, {value}, {kv2Str}");
                     Emoticons[fileName] = new Emoticon(fileName, kv1Str, value, int.Parse(kv2Str));
+
+                }
+
+                var vpkBrowser = new VpkBrowser();
+                HashSet<string> needExtensions = new ()
+                {
+                    "txt"
+                };
+
+                HashSet<string> needFolders = new()
+                {
+                    "scripts/emoticons"
+                };
+
+                var entries = vpkBrowser.ReadFiles(needExtensions, needFolders);
+                foreach (var entry in entries)
+                {
+                    emoticonKV = KeyValue.CreateFromGameFile(entry.Key);
+                    foreach (var kv in emoticonKV.SubKeys)
+                    {
+                        var value = int.Parse(kv.Name);
+                        var kv1 = emoticonKV.GetSubKey($"{kv.Name}/image_name");
+                        if (kv1 == null || value >= 10000)
+                            continue;
+                        var kv1Str = kv1.GetString();
+
+                        var kv2 = emoticonKV.GetSubKey($"{kv.Name}/ms_per_frame");
+                        if (kv2 == null)
+                            continue;
+                        var kv2Str = kv2.GetString();
+                        var fileName = kv1Str[0..^4] + "_png.vtex_c";
+
+                        //Console.WriteLine($"{fileName}, {kv1Str}, {value}, {kv2Str}");
+                        Emoticons[fileName] = new Emoticon(fileName, kv1Str, value, int.Parse(kv2Str));
+                    }
                 }
                 MaxScroll = -(40 * ((int)Math.Ceiling(Emoticons.Count / 8f) - 5));
 
-                var vpkBrowser = new VpkBrowser();
-                vpkBrowser.ReadFiles();
-                foreach (var item in vpkBrowser.entries)
+                foreach (var emoticon in Emoticons.Values)
                 {
-                    var val = item.Value;
-                    var fileName = val.GetFileName();
-
-                    if (!Emoticons.TryGetValue(fileName, out var emoticon))
-                        continue;
-
-                    var stream = GameManager.OpenGameFile(item.Key);
+                    //Console.WriteLine("panorama/images/emoticons/" + emoticon.FileName);
+                    var stream = GameManager.OpenGameFile("panorama/images/emoticons/" + emoticon.FileName);
                     var binaryReader = new BinaryReader(stream);
                     var valveTextureBlock = new Texture(binaryReader);
                     if (valveTextureBlock.Data == null)
