@@ -73,7 +73,7 @@ namespace FreeEmoteIcons.Window
                     //if (kv1Str != "wink.png")
                     //    continue;
 
-                    Console.WriteLine($"{fileName}, {kv1Str}, {value}, {kv2Str}");
+                    //Console.WriteLine($"{fileName}, {kv1Str}, {value}, {kv2Str}");
                     Emoticons[fileName] = new Emoticon(fileName, kv1Str, value, int.Parse(kv2Str));
 
                 }
