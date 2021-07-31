@@ -1,4 +1,9 @@
-﻿using Divine.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
+
+using Divine.Entity;
 using Divine.Entity.Entities.Components;
 using Divine.Extensions;
 using Divine.Game;
@@ -9,9 +14,6 @@ using Divine.Menu.Items;
 using Divine.Numerics;
 using Divine.Renderer;
 using Divine.Renderer.ValveTexture;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.IO;
 
 using TechiesMines.Enums;
 
@@ -21,36 +23,50 @@ namespace TechiesMines
     {
         private RootMenu RootMenu;
         private MenuSwitcher EnableMinePositions;
+        private MenuSelector DisplayStyle;
         private MenuSelector DisplayType;
-        private Team MyTeam = Team.None;
+        private MenuSlider DisplayRange;
+        private MenuHoldKey CustomKey;
         private Dictionary<Vector3, Mines> Positions;
         private Dictionary<string, Button> Buttons = new Dictionary<string, Button>();
+        private Tuple<Vector3, bool> MouseWheelHovered = null;
+        private Dictionary<Vector3, int> MouseWheelSelected = new Dictionary<Vector3, int>();
         private const int IMG_SIZE = 26;
         private const int GAP_SIZE = 4;
+        private Team MyTeam = Team.None;
+        private bool DisplayCondition;
+        private bool IsKeyDown;
 
         private readonly Dictionary<string, string> MineImages = new Dictionary<string, string>()
         {
-            { Mines.LandMine.ToString(), "panorama/images/spellicons/techies_land_mines_png.vtex_c" },
-            { Mines.StasisTrap.ToString(), "panorama/images/spellicons/techies_stasis_trap_png.vtex_c" },
-            { Mines.RemoteMine.ToString(), "panorama/images/spellicons/techies_remote_mines_png.vtex_c" },
+            { nameof(Mines.LandMine), "panorama/images/spellicons/techies_land_mines_png.vtex_c" },
+            { nameof(Mines.StasisTrap), "panorama/images/spellicons/techies_stasis_trap_png.vtex_c" },
+            { nameof(Mines.RemoteMine), "panorama/images/spellicons/techies_remote_mines_png.vtex_c" },
         };
-        private Dictionary<Vector3, bool> Checked = new Dictionary<Vector3, bool>();
+        private readonly List<Mines> MainMines = new List<Mines>
+        {
+            Mines.LandMine,
+            Mines.StasisTrap,
+            Mines.RemoteMine
+        };
+        private string[] DisplayStyles = {
+            "Vertical",
+            "Horizontal",
+            //"Mouse Wheel"
+        };
         private string[] DisplayTypes = {
             "Always",
-            //"In Range",
+            "In Range",
             "Custom key"
         };
-        private bool DisplayCondition;
-        private bool IsKeyDown;
-        private MenuSlider DisplayRange;
-        private MenuHoldKey CustomKey;
 
         public Context()
         {
             RootMenu = MenuManager.CreateRootMenu("Techies Mine Positions");
             EnableMinePositions = RootMenu.CreateSwitcher("Enabled");
-            DisplayType = RootMenu.CreateSelector("Display type", DisplayTypes);
-            DisplayRange = RootMenu.CreateSlider("Display Range", 700, 300, 1500);
+            DisplayStyle = RootMenu.CreateSelector("Display Style", DisplayStyles);
+            DisplayType = RootMenu.CreateSelector("Display Type", DisplayTypes);
+            DisplayRange = RootMenu.CreateSlider("Display Range", 1500, 700, 5000);
             CustomKey = RootMenu.CreateHoldKey("Custom Key");
             MyTeam = EntityManager.LocalHero.Team;
             Positions = (MyTeam == Team.Radiant) ? MinePositions.Radiant : MinePositions.Dire;
@@ -58,6 +74,8 @@ namespace TechiesMines
             RendererManager.LoadImageFromAssembly("TechiesMines.Rect.png", "TechiesMines.Resources.rect.png");
             RendererManager.LoadImageFromAssembly("TechiesMines.Rect2.png", "TechiesMines.Resources.rect2.png");
             RendererManager.LoadImageFromAssembly("TechiesMines.Rect3.png", "TechiesMines.Resources.rect3.png");
+            RendererManager.LoadImageFromAssembly("TechiesMines.Rect4.png", "TechiesMines.Resources.rect4.png");
+            RendererManager.LoadImageFromAssembly("TechiesMines.Rect5.png", "TechiesMines.Resources.rect5.png");
 
             foreach (var Mine in MineImages)
             {
@@ -74,10 +92,16 @@ namespace TechiesMines
                 RendererManager.LoadImage($"TechiesMines.{Mine.Key}.png", memoryStream);
             }
 
+            foreach (var spot in Positions)
+            {
+                MouseWheelSelected[spot.Key] = 1;
+            }
+
             RendererManager.Draw += RendererManager_Draw;
             InputManager.MouseMove += InputManager_MouseMove;
             InputManager.MouseKeyDown += InputManager_MouseKeyDown;
             InputManager.MouseKeyUp += InputManager_MouseKeyUp;
+            InputManager.MouseWheel += InputManager_MouseWheel;
             Button.Button_Click += Button_Button_Click;
             DisplayType.ValueChanged += DisplayType_ValueChanged;
         }
@@ -121,8 +145,46 @@ namespace TechiesMines
             IsKeyDown = e.Value;
         }
 
+        private void InputManager_MouseWheel(MouseWheelEventArgs e)
+        {
+            if (DisplayStyle.Value != "Mouse Wheel" || MouseWheelHovered == null)
+                return;
+
+            if (!MouseWheelSelected.TryGetValue(MouseWheelHovered.Item1, out var value))
+                MouseWheelSelected.Add(MouseWheelHovered.Item1, 1);
+
+            int tempVal;
+            if (e.Up)
+            {
+                if ((value << 1) <= 4)
+                    tempVal = (value << 1);
+                else
+                    tempVal = value;
+
+                //if (!Buttons.TryGetValue($"({MouseWheelHovered.Item1}){(Mines)tempVal}", out var buttonn))
+                //    tempVal <<= 1;
+            }
+            else
+            {
+                if ((value >> 1) >= 1)
+                    tempVal = (value >> 1);
+                else
+                    tempVal = value;
+
+                //if (!Buttons.TryGetValue($"({MouseWheelHovered.Item1}){(Mines)tempVal}", out var buttonn))
+                //    tempVal >>= 1;
+            }
+            Console.WriteLine(Buttons.TryGetValue($"({MouseWheelHovered.Item1}){(Mines)tempVal}", out var buttonn));
+
+            MouseWheelSelected[MouseWheelHovered.Item1] = tempVal;
+            MouseWheelHovered = null;
+        }
+
         private void InputManager_MouseMove(MouseMoveEventArgs e)
         {
+            if (DisplayStyle.Value == "Mouse Wheel" && MouseWheelHovered == null)
+                return;
+
             foreach (var button in Buttons)
             {
                 button.Value.InputManager_MouseMove(e);
@@ -131,7 +193,7 @@ namespace TechiesMines
 
         private void InputManager_MouseKeyUp(MouseEventArgs e)
         {
-            if (e.MouseKey != MouseKey.Left)
+            if (DisplayStyle.Value == "Mouse Wheel" && MouseWheelHovered == null)
                 return;
 
             foreach (var button in Buttons)
@@ -142,7 +204,7 @@ namespace TechiesMines
 
         private void InputManager_MouseKeyDown(MouseEventArgs e)
         {
-            if (e.MouseKey != MouseKey.Left)
+            if (DisplayStyle.Value == "Mouse Wheel" && MouseWheelHovered == null)
                 return;
 
             foreach (var button in Buttons)
@@ -156,23 +218,18 @@ namespace TechiesMines
             if (!EnableMinePositions.Value)
                 return;
 
-            switch (DisplayType.Value)
-            {
-                case "Always":
-                    DisplayCondition = true;
-                    break;
-                case "In Range":
-                    break;
-                default:
-                    DisplayCondition = IsKeyDown;
-                    break;
-            }
+            DisplayCondition = true;
+            if (DisplayType.Value == "Custom key")
+                DisplayCondition = IsKeyDown;
 
             if (!DisplayCondition)
                 return;
 
             foreach (var val in Positions)
             {
+                if (DisplayType.Value == "In Range" && EntityManager.LocalHero.Distance2D(val.Key) > DisplayRange.Value)
+                    continue;
+
                 var screenPos = RendererManager.WorldToScreen(val.Key);
                 if (screenPos.IsZero)
                     continue;
@@ -185,55 +242,67 @@ namespace TechiesMines
                     || minesInSpot == Mines.LandMine_StasisTrap
                     || minesInSpot == Mines.StasisTrap_RemoteMine)
                 {
-                    rect.Height = (IMG_SIZE * 2) + (GAP_SIZE * 3);
-                    textureKey = "TechiesMines.Rect2.png";
+                    if (DisplayStyle.Value == "Vertical")
+                    {
+                        rect.Height = (IMG_SIZE * 2) + (GAP_SIZE * 3);
+                        textureKey = "TechiesMines.Rect2.png";
+                    }
+                    else if (DisplayStyle.Value == "Horizontal")
+                    {
+                        rect.Width = (IMG_SIZE * 2) + (GAP_SIZE * 3);
+                        textureKey = "TechiesMines.Rect4.png";
+                    }
                 }
                 else if (minesInSpot == Mines.LandMine_StasisTrap_RemoteMine)
                 {
-                    rect.Height = (IMG_SIZE * 3) + (GAP_SIZE * 4);
-                    textureKey = "TechiesMines.Rect3.png";
+                    if (DisplayStyle.Value == "Vertical")
+                    {
+                        rect.Height = (IMG_SIZE * 3) + (GAP_SIZE * 4);
+                        textureKey = "TechiesMines.Rect3.png";
+                    }
+                    else if (DisplayStyle.Value == "Horizontal")
+                    {
+                        rect.Width = (IMG_SIZE * 3) + (GAP_SIZE * 4);
+                        textureKey = "TechiesMines.Rect5.png";
+                    }
                 }
 
                 RendererManager.DrawImage(textureKey, rect);
 
+                var xOffset = GAP_SIZE;
                 var yOffset = GAP_SIZE;
                 var imgHoverSize = 1.5f;
 
-                for (int i = 0; i < 3; i++)
+                foreach (var mine in MainMines)
                 {
-                    var imgRect = new RectangleF(screenPos.X + GAP_SIZE, screenPos.Y + yOffset, IMG_SIZE, IMG_SIZE);
+                    if ((val.Value & mine) != mine)
+                        continue;
+
+                    if (DisplayStyle.Value == "Mouse Wheel" && ((Mines)MouseWheelSelected[val.Key]) != mine)
+                        continue;
+
+                    var imgRect = new RectangleF(screenPos.X + xOffset, screenPos.Y + yOffset, IMG_SIZE, IMG_SIZE);
 
                     if (InputManager.MousePosition.IsUnderRectangle(imgRect))
                     {
+                        if (MouseWheelHovered == null)
+                            MouseWheelHovered = Tuple.Create(val.Key, true);
                         imgRect.X -= imgHoverSize;
                         imgRect.Y -= imgHoverSize;
                         imgRect.Width += imgHoverSize * 2;
                         imgRect.Height += imgHoverSize * 2;
                     }
 
-                    if (i == 0 && (val.Value & Mines.LandMine) == Mines.LandMine)
-                    {
-                        if (!Buttons.TryGetValue($"({val.Key}){Mines.LandMine}", out var landMine))
-                            Buttons.Add($"({val.Key}){Mines.LandMine}", new Button(imgRect, val.Key, Mines.LandMine));
-                        landMine?.UpdateRect(imgRect);
-                        landMine?.Draw();
+                    if (!Buttons.TryGetValue($"({val.Key}){mine}", out var buttonMine))
+                        Buttons.Add($"({val.Key}){mine}", new Button(imgRect, val.Key, mine));
+
+                    buttonMine?.UpdateRect(imgRect);
+                    buttonMine?.Draw();
+
+                    if (DisplayStyle.Value == "Vertical")
                         yOffset += IMG_SIZE + GAP_SIZE;
-                    }
-                    else if (i == 1 && (val.Value & Mines.StasisTrap) == Mines.StasisTrap)
-                    {
-                        if (!Buttons.TryGetValue($"({val.Key}){Mines.StasisTrap}", out var stasisTrap))
-                            Buttons.Add($"({val.Key}){Mines.StasisTrap}", new Button(imgRect, val.Key, Mines.StasisTrap));
-                        stasisTrap?.UpdateRect(imgRect);
-                        stasisTrap?.Draw();
-                        yOffset += IMG_SIZE + GAP_SIZE;
-                    }
-                    else if (i == 2 && (val.Value & Mines.RemoteMine) == Mines.RemoteMine)
-                    {
-                        if (!Buttons.TryGetValue($"({val.Key}){Mines.RemoteMine}", out var remoteMine))
-                            Buttons.Add($"({val.Key}){Mines.RemoteMine}", new Button(imgRect, val.Key, Mines.RemoteMine));
-                        remoteMine?.UpdateRect(imgRect);
-                        remoteMine?.Draw();
-                    }
+                    else if (DisplayStyle.Value == "Horizontal")
+                        xOffset += IMG_SIZE + GAP_SIZE;
                 }
             }
         }

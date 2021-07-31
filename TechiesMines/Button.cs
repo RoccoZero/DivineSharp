@@ -1,8 +1,10 @@
-﻿using Divine.Extensions;
+﻿
+using Divine.Extensions;
 using Divine.Input;
 using Divine.Input.EventArgs;
 using Divine.Numerics;
 using Divine.Renderer;
+
 using TechiesMines.Enums;
 
 namespace TechiesMines
@@ -14,8 +16,9 @@ namespace TechiesMines
         public static event ButtonEventHandler Button_Click;
         private event ButtonEventHandler Click;
         private bool IsKeyDown;
-        public bool IsHovered;
+
         private RectangleF ButtonRect;
+        public bool IsHovered;
         public readonly Mines Mine;
         public readonly Vector3 PlantPos;
 
@@ -51,9 +54,7 @@ namespace TechiesMines
         public void InputManager_MouseKeyDown(MouseEventArgs e)
         {
             if (e.MouseKey != MouseKey.Left)
-            {
                 return;
-            }
 
             if (e.Position.IsUnderRectangle(new RectangleF(ButtonRect.X, ButtonRect.Y, ButtonRect.Width, ButtonRect.Height)))
             {
@@ -65,13 +66,10 @@ namespace TechiesMines
         public void InputManager_MouseKeyUp(MouseEventArgs e)
         {
             if (e.MouseKey != MouseKey.Left)
-            {
                 return;
-            }
 
             if (e.Position.IsUnderRectangle(new RectangleF(ButtonRect.X, ButtonRect.Y, ButtonRect.Width, ButtonRect.Height)) && IsKeyDown)
             {
-                //Console.WriteLine($"{TextureKey} clicked!");
                 Click?.Invoke(this);
                 e.Process = false;
             }
@@ -85,12 +83,9 @@ namespace TechiesMines
 
         public void Draw()
         {
-            //Position = RendererManager.WorldToScreen(PlantPos);
-
             RendererManager.DrawImage(
             $"TechiesMines.{Mine}.png",
             ButtonRect);
-
         }
     }
 }
