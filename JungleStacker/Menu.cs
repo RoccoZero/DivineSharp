@@ -1,9 +1,5 @@
-﻿using Divine.Menu;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Divine.Input;
+using Divine.Menu;
 using Divine.Menu.Items;
 
 namespace JungleStacker
@@ -17,7 +13,7 @@ namespace JungleStacker
         {
             var RootMenu = MenuManager.CreateRootMenu("Jungle Stacker");
             Enabled = RootMenu.CreateSwitcher("Enabled");
-            AutoSelectUnits = RootMenu.CreateHoldKey("Auto Select Units for Stack", System.Windows.Input.Key.None);
+            AutoSelectUnits = RootMenu.CreateHoldKey("Auto Select Units for Stack", Key.None);
         }
     }
 }

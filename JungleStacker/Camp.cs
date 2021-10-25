@@ -52,7 +52,7 @@ namespace JungleStacker
 
         private void InputManager_KeyDown(KeyEventArgs e)
         {
-            if (e.Key != System.Windows.Input.Key.LeftCtrl)
+            if (e.Key != Key.LeftCtrl)
             {
                 return;
             }
@@ -62,7 +62,7 @@ namespace JungleStacker
 
         private void InputManager_KeyUp(KeyEventArgs e)
         {
-            if (e.Key != System.Windows.Input.Key.LeftCtrl)
+            if (e.Key != Key.LeftCtrl)
             {
                 return;
             }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <Platforms>x64</Platforms>
     <Configurations>Release</Configurations>
     <Configuration>Release</Configuration>
@@ -11,15 +11,13 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 
-    <UseWPF>true</UseWPF>
-    
     <OutputPath>.\bin\</OutputPath>
     <IntermediateOutputPath>.\obj\</IntermediateOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Divine">
-      <HintPath>..\..\..\..\Desktop\Divine.NET5\bin\Divine.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Divine\References\Divine.dll</HintPath>
     </Reference>
   </ItemGroup>
 
