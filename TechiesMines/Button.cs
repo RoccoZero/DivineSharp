@@ -1,5 +1,4 @@
-﻿
-using Divine.Extensions;
+﻿using Divine.Extensions;
 using Divine.Input;
 using Divine.Input.EventArgs;
 using Divine.Numerics;

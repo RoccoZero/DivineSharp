@@ -1,5 +1,9 @@
+<<<<<<< Updated upstream
 ﻿using Divine.Input;
 using Divine.Menu;
+=======
+﻿using Divine.Menu;
+>>>>>>> Stashed changes
 using Divine.Menu.Items;
 
 namespace JungleStacker

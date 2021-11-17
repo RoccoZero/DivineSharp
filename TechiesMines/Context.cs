@@ -27,7 +27,9 @@ namespace TechiesMines
         private MenuSelector DisplayType;
         private MenuSlider DisplayRange;
         private MenuHoldKey CustomKey;
+        private MenuSlider TestSize;
         private Dictionary<Vector3, Mines> Positions;
+
         private Dictionary<string, Button> Buttons = new Dictionary<string, Button>();
         private Tuple<Vector3, bool> MouseWheelHovered = null;
         private Dictionary<Vector3, int> MouseWheelSelected = new Dictionary<Vector3, int>();
@@ -70,6 +72,7 @@ namespace TechiesMines
             CustomKey = RootMenu.CreateHoldKey("Custom Key");
             MyTeam = EntityManager.LocalHero.Team;
             Positions = (MyTeam == Team.Radiant) ? MinePositions.Radiant : MinePositions.Dire;
+            //TestSize = RootMenu.CreateSlider("Test Size", 100, 50, 300);
 
             RendererManager.LoadImageFromAssembly("TechiesMines.Rect.png", "TechiesMines.Resources.rect.png");
             RendererManager.LoadImageFromAssembly("TechiesMines.Rect2.png", "TechiesMines.Resources.rect2.png");
@@ -100,10 +103,17 @@ namespace TechiesMines
             RendererManager.Draw += RendererManager_Draw;
             InputManager.MouseMove += InputManager_MouseMove;
             InputManager.MouseKeyDown += InputManager_MouseKeyDown;
+            InputManager.MouseKeyDown += Panel.OnMouseKeyDown;
             InputManager.MouseKeyUp += InputManager_MouseKeyUp;
             InputManager.MouseWheel += InputManager_MouseWheel;
             Button.Button_Click += Button_Button_Click;
             DisplayType.ValueChanged += DisplayType_ValueChanged;
+            //TestSize.ValueChanged += TestSize_ValueChanged;
+        }
+
+        private void TestSize_ValueChanged(MenuSlider slider, Divine.Menu.EventArgs.SliderEventArgs e)
+        {
+            Panel.size = e.NewValue;
         }
 
         private void Button_Button_Click(Button sender)
@@ -215,6 +225,7 @@ namespace TechiesMines
 
         private void RendererManager_Draw()
         {
+            //Panel.ButtonDrawOn();
             if (!EnableMinePositions.Value)
                 return;
 

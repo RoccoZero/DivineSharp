@@ -1,5 +1,4 @@
-﻿using Divine.Menu.Items;
-using System;
+﻿using JungleStacker.Core;
 
 namespace JungleStacker
 {

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Broken -->
+    <Compile Remove="CharBags.cs" />
+    <Compile Remove="GCHForm.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Broken -->
+    <None Include="CharBags.cs" />
+    <None Include="GCHForm.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\C5\C5.csproj" />
+  </ItemGroup>
+</Project>

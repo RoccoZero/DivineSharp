@@ -8,10 +8,10 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    
+
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    
+
     <OutputPath>.\bin\</OutputPath>
     <IntermediateOutputPath>.\obj\</IntermediateOutputPath>
   </PropertyGroup>
@@ -35,6 +35,9 @@
     </Reference>
     <Reference Include="Divine.Zero">
       <HintPath>..\..\..\..\..\..\Program Files\Divine\References\Divine.Zero.dll</HintPath>
+    </Reference>
+    <Reference Include="O9K.Core">
+      <HintPath>..\..\..\..\..\..\Program Files\Divine\Plugins\O9K.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
 
