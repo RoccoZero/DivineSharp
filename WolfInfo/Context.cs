@@ -1,6 +1,5 @@
 ﻿using Divine.Menu;
 using Divine.Menu.Items;
-using Divine.Order;
 
 namespace WolfInfo
 {
@@ -13,7 +12,6 @@ namespace WolfInfo
         {
             RootMenu = MenuManager.CreateRootMenu("WolfInfo");
             CreepHPBars = new CreepHPBars(this);
-            OrderManager.
         }
 
         public void Dispose()
