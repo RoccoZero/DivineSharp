@@ -55,26 +55,20 @@ namespace JungleStacker.Core
 
         private void InputManager_KeyDown(KeyEventArgs e)
         {
-<<<<<<< Updated upstream:JungleStacker/Camp.cs
             if (e.Key != Key.LeftCtrl)
             {
-=======
-            if (e.Key != System.Windows.Input.Key.LeftCtrl)
->>>>>>> Stashed changes:JungleStacker/Core/Camp.cs
                 return;
+            }
 
             IsKeyDown = true;
         }
 
         private void InputManager_KeyUp(KeyEventArgs e)
         {
-<<<<<<< Updated upstream:JungleStacker/Camp.cs
             if (e.Key != Key.LeftCtrl)
             {
-=======
-            if (e.Key != System.Windows.Input.Key.LeftCtrl)
->>>>>>> Stashed changes:JungleStacker/Core/Camp.cs
                 return;
+            }
 
             IsKeyDown = false;
         }
