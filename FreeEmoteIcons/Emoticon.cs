@@ -16,7 +16,5 @@
             Value = value;
             MsPerFrame = msPerFrame;
         }
-
-
     }
 }

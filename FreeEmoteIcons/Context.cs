@@ -19,7 +19,7 @@ namespace FreeEmoteIcons
 
         internal void Dispose()
         {
-
+            Window.Dispose();
         }
     }
 }
